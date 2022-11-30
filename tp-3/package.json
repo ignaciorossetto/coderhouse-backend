@@ -1,19 +1,16 @@
 {
-  "name": "tp-2",
+  "name": "tp-3",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "tp3.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node clase5.js"
+    "start": "nodemon .src/index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "moment": "^2.29.4",
-    "momentjs": "^2.0.0",
     "nodemon": "^2.0.20"
   }
 }
