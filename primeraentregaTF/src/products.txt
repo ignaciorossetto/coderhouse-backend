@@ -1,0 +1,96 @@
+{
+  "counter": 11,
+  "products": [
+    {
+      "id": 0,
+      "title": "producto 0",
+      "description": "ghj",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "qwe",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 1,
+      "title": "nuevoTitulo",
+      "description": "zxc",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "rty",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 4,
+      "title": "producto 4",
+      "description": "123",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "fgh",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 5,
+      "title": "producto 8",
+      "description": "444",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "454",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 6,
+      "title": "producto 8",
+      "description": "444",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "789",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 7,
+      "title": "producto 8",
+      "description": "444",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "9875",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 8,
+      "title": 87987,
+      "description": "444",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": 995,
+      "stock": 10,
+      "status": true,
+      "titulo": 995
+    },
+    {
+      "id": 9,
+      "title": "producto 8",
+      "description": "444",
+      "price": 1000,
+      "thumbnail": "http://xxxx",
+      "code": "887",
+      "stock": 10,
+      "status": true
+    },
+    {
+      "id": 10,
+      "title": "PRODUCTO POSTMAN",
+      "description": "MEDIDAS 60X60",
+      "price": 10000,
+      "thumbnail": "",
+      "code": 548974355,
+      "stock": 500,
+      "status": true
+    }
+  ]
+}

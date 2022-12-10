@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from 'fs'
 
 class productManager {
   constructor(path) {
@@ -33,6 +33,7 @@ class productManager {
         thumbnail: thumbnail,
         code: code,
         stock: stock,
+        status: true
       };
       objs.products.push(newObj);
       await fs.promises.writeFile(this.path, JSON.stringify(objs, null, 2));
@@ -78,10 +79,16 @@ class productManager {
   deleteProductById = async (_id) => {
     try {
       const objs = await this.getAll();
+      const obj = objs.products.find((item)=> item.id === _id)
+      if(!obj){
+        return 'product does not exists'
+      }
       const newObjs = objs.products.filter(({ id }) => id !== _id);
+      console.log(newObjs);
       objs.products = newObjs;
+
       await fs.promises.writeFile(this.path, JSON.stringify(objs, null, 2));
-      return "product deleted";
+      return `product ${_id} deleted`;
     } catch (error) {
       return console.log(error);
     }
@@ -132,10 +139,4 @@ class productManager {
   };
 }
 
-/// esta combinacion me tira error!
-// manager = new productManager('products1.txt')
-// manager.addProduct("producto 8", "444", 1000, "http://xxxx", "454", 10);
-// manager.getProductById(0).then(val => console.log(val))
-// manager.deleteAll()
-
-module.exports = productManager;
+export default productManager

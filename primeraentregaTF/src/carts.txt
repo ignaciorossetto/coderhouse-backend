@@ -1,0 +1,1 @@
+{"counter":6,"carts":[{"id":1,"cartProduct":[{"productId":3,"quantity":3},{"productId":1,"quantity":2}]},{"id":2,"cartProduct":[]}]}

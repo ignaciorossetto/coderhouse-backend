@@ -1,9 +1,11 @@
 const express = require('express')
 const app = express()
 const productManager = require('./src/productManager')
+const CartManager = require('./src/cartManager')
 const PORT = 5000
 
 const manager = new productManager('./src/products.txt')
+const cartManager = new CartManager('./src/carts.txt')
 
 app.use(express.urlencoded({extended: true}))
 
