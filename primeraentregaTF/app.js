@@ -8,6 +8,10 @@ const PORT = 5000
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
+app.use('/', (req, res, next)=>{
+    console.log('mi primer app midleware general')
+    next()
+})
 
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)

@@ -1,18 +1,16 @@
 import { Router } from "express";
-import cartManager from '../src/cartManager.js'
-import productManager from "../src/productManager.js";
+import cartManager from '../managers/cartManager.js'
+import productManager from "../managers/productManager.js";
+import __dirname from "../utils.js";
 
-const prodManager = new productManager("./src/products.txt");
-const manager = new cartManager('./src/carts.txt')
+
+const prodManager = new productManager(__dirname + "/managers/db/products.json");
+const manager = new cartManager(__dirname + "/managers/db/carts.json")
 const router = Router()
 
-const midlewareCart = (req, res, next) => {
-    console.log('midleware en carts')
-    next()
-}
 
 
-router.get('/', midlewareCart, async(req,res)=>{
+router.get('/', async(req,res)=>{
     const response = await manager.getAll()
     return res.send(response)
 })
@@ -47,7 +45,6 @@ router.delete('/:cid', async(req,res)=>{
 })
 
 router.post('/:cid/product/:pid', async(req,res)=>{
-    try {
         const cid = Number(req.params.cid)
         const pid = Number(req.params.pid)
         const cart = await manager.getById(cid)
@@ -62,9 +59,7 @@ router.post('/:cid/product/:pid', async(req,res)=>{
         }
         const response = await manager.addProductToCart(cid, pid)
         res.send(response)
-    } catch (error) {
-     res.send(error)   
-    }
+
 })
 
 

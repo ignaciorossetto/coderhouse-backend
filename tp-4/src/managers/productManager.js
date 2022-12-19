@@ -17,7 +17,7 @@ class productManager {
     }
   };
 
-  addProduct = async (title, description, price, thumbnail, code, stock) => {
+  addProduct = async (title, description, price, thumbnail, code, stock, status) => {
     const objs = await this.getAll();
     try {
       if (this.checkCode(objs.products, code)) {
@@ -31,11 +31,11 @@ class productManager {
         thumbnail: thumbnail,
         code: code,
         stock: stock,
-        status: true,
+        status: status,
       };
       objs.products.push(newObj);
       await fs.promises.writeFile(this.path, JSON.stringify(objs, null, 2));
-      return newObj;
+      return 'Producto creado!';
     } catch (error) {
       return error;
     }
@@ -70,7 +70,7 @@ class productManager {
       const obj = products.find(({ id }) => id === _id);
       return obj;
     } catch (error) {
-      console.log(error);
+      return error
     }
   };
 
@@ -83,7 +83,6 @@ class productManager {
       }
       const newObjs = objs.products.filter(({ id }) => id !== _id);
       objs.products = newObjs;
-
       await fs.promises.writeFile(this.path, JSON.stringify(objs, null, 2));
       return `Product ${_id} deleted`;
     } catch (error) {
@@ -97,7 +96,6 @@ class productManager {
       if (!bool) {
         return false;
       }
-
       return true;
     } catch (error) {
       return error;
@@ -106,10 +104,6 @@ class productManager {
 
   updateProduct = async (id, param) => {
     try {
-      const product = await this.getProductById(id);
-      const productParams = Object.keys(product);
-      const objs = await this.getAll();
-      const index = objs.products.findIndex((element) => element.id === id);
       if (!param) {
         return "Erorr, debe pasar al menos un parametro!";
       }
@@ -121,10 +115,14 @@ class productManager {
           return "Ya se registro un producto con el mismo codigo! Usar otro!";
         }
       }
+      const product = await this.getProductById(id);
+      const productParams = Object.keys(product);
+      const objs = await this.getAll();
+      const index = objs.products.findIndex((element) => element.id === id);
       const keys = Object.keys(param);
       keys.forEach((element) => {
         if (!productParams.includes(element)) {
-          return `El parametro: ${element} no esxiste.`;
+          return `El parametro: ${element} no existe.`;
         }
         product[element] = param[element] || product.element;
       });
