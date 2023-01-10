@@ -9,20 +9,20 @@ const handleCreateButton = async (e) => {
     for (let pair of formData.entries()) {
       obj[pair[0]] = pair[1];
     }
-    await axios.post('http://localhost:8080/api/products', obj)
 
     // dejar en blanco el form
     const resetBtn = document.getElementById("resetButton");
     resetBtn.click();
-
+    console.log(obj);
     // disparar la llamada al socket para que devuelva los productos actualizados
-    socket.emit("productsModified");
+    socket.emit("productsModified", obj);
     socket.on("products", (data) => {
+      console.log(data);
       document.getElementById("socketList").innerHTML = "";
-      data.products.forEach((element) => {
+      data.forEach((element) => {
         document.getElementById(
           "socketList"
-        ).innerHTML += `<li>${element.title}</li>`;
+        ).innerHTML += `<li>id: ${element._id} - ${element.title}</li>`;
       });
     });
   } catch (error) {
@@ -50,23 +50,29 @@ document
   .getElementById("deletItemButton")
   .addEventListener("click", handleDeleteButton);
 
+
 socket.on("products", (data) => {
+  console.log(data);
   document.getElementById("socketList").innerHTML = "";
-  data.products.forEach((element) => {
+  data.forEach((element) => {
     document.getElementById(
       "socketList"
     ).innerHTML += `<li>${element.title}</li>`;
   });
 });
 
+socket.on('newMessage', data=>console.log(data))
+
+
 window.onload = () => {
-  socket.emit("authenticated");
   socket.on("products", (data) => {
+    console.log(data);
+
     document.getElementById("socketList").innerHTML = "";
-    data.products.forEach((element) => {
+    data.forEach((element) => {
       document.getElementById(
         "socketList"
-      ).innerHTML += `<li>${element.title}</li>`;
+      ).innerHTML += `<li>id: ${element._id} - ${element.title}</li>`;
     });
   });
 };

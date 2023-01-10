@@ -6,6 +6,7 @@ import cartsRouter from './routes/carts.router.js'
 import { Server } from 'socket.io'
 import handlebars from 'express-handlebars'
 import productManager from './managers/productManager.js'
+import mongoose, {mongo} from 'mongoose'
 
 const manager = new productManager(__dirname + "/managers/db/products.json");
 
@@ -15,6 +16,8 @@ const app = express()
 const httpServer = app.listen(8080, ()=> {
     console.log('Server listening on port 8080');
 })
+
+mongoose.connect 
 
 
 // seteo de middlewares
