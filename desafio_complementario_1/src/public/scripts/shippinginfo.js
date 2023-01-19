@@ -1,7 +1,7 @@
 const createProductButton = document.getElementById('createProductButton')
+const userCartId = '63c93ca99aa5414d9ef74eb9'
 
 createProductButton.addEventListener('click', async(e)=> {
-    const cart = JSON.parse(localStorage.getItem('cart_1'))
     e.preventDefault()
     const ship = {
         name: e.target.form[0].value,
@@ -15,7 +15,7 @@ createProductButton.addEventListener('click', async(e)=> {
         status: 'pendiente',
     }
     try {
-        const response = await axios.post('http://localhost:5000/api/carts', {shippingInfo: ship, paymentInfo: payment, cart: cart})
+        const response = await axios.put(`http://localhost:5000/api/carts/${userCartId}`, {shippingInfo: ship, paymentInfo: payment})
         const resetBtn = document.getElementById("resetButton");
         resetBtn.click();
         Swal.fire({

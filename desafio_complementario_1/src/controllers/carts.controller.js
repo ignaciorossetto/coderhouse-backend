@@ -23,7 +23,6 @@ import { cartModel } from "../dao/models/carts.model.js";
   }
   
   export const addCart = async (req, res) => {
-    console.log(req.body);
     try {
       const response = await cartModel.create(req.body);
       res.json({ cart: response, status: "success" });
@@ -37,7 +36,7 @@ import { cartModel } from "../dao/models/carts.model.js";
     try {
       const id = req.params.id;
       const obj = req.body;
-      const response = await cartModel.findByIdAndUpdate({ _id: id }, {$set: obj});
+      const response = await cartModel.findByIdAndUpdate({ _id: id }, obj);
       res.json({ cart: response, status: "success" });
     } catch (error) {
       res.status(404).json({ message: "Error updating cart", error: error });

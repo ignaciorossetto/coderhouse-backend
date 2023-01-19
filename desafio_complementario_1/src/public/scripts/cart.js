@@ -1,30 +1,37 @@
-const deleteHandler = (id) => {
-  const cart = JSON.parse(localStorage.getItem("cart_1"));
-  const index = cart.findIndex(({ _id }) => _id === id);
-  cart[index].quantity -= 1;
-  if (cart[index].quantity <= 0){
-    cart.splice(index, 1)
+const userCartId = '63c93ca99aa5414d9ef74eb9'
+
+const deleteHandler = async(id) => {
+  const response = await axios.get(`http://localhost:5000/api/carts/${userCartId}`)
+  const {cart : {shopCart}} = response.data
+  const index = shopCart.findIndex(({ product: {_id} }) => _id === id);
+  shopCart[index].quantity -= 1;
+  if (shopCart[index].quantity <= 0){
+    shopCart.splice(index, 1)
   }
-  localStorage.setItem("cart_1", JSON.stringify(cart));
-  renderCart();
+  await axios.put(`http://localhost:5000/api/carts/${userCartId}`, {shopCart: shopCart})
+  renderCart()
 };
 
-const renderCart = () => {
-  const items = JSON.parse(localStorage.getItem("cart_1"));
+const renderCart = async() => {
+  const response = await axios.get(`http://localhost:5000/api/carts/${userCartId}`)
+  const {cart : {shopCart}} = response.data
   let cartContainer = document.getElementById("cartContainer");
   let total = 0;
   cartContainer.innerHTML = ''
-  items.forEach((element) => {
+  console.log(shopCart);
+  shopCart.forEach((element) => {
     cartContainer.innerHTML += `
         <div>
-        <h4>ID: ${element._id}</h4>
-        <h5>PRECIO: $${element.price}</h5>
+          <img src='${element.product.image}' alt='x' style='width: auto;
+          height: 200px;'>
+        <h4>ID: ${element.product._id}</h4>
+        <h5>PRECIO: $${element.product.price}</h5>
         <h5>CANTIDAD: ${element.quantity}</h5>
-        <button id='deleteItemBtn' onclick="deleteHandler('${element._id}')">Eliminar del carrito </button>
+        <button id='deleteItemBtn' onclick="deleteHandler('${element.product._id}')">Eliminar del carrito </button>
         </div>
         <hr>
         `;
-    total += element.price * element.quantity;
+    total += element.product.price * element.quantity;
   });
 
   cartContainer.innerHTML += `
