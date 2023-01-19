@@ -10,12 +10,42 @@
         Ver Carrito
         </a>
     </h3>
+    <div style="align-self: center; margin-bottom:20px;">
+        <label for="b">Filtrar por categoria</label>
+        <select name="a" id="selectCategories" onchange="handleSelect(event)">
+        </select>
+        <label for="b">Ordenar por precio</label>
+        <select name="b" id="selectPriceSort" onchange="handleSelect(event)">
+            <option value="-">-</option>
+            <option value="asc">Asc</option>
+            <option value="desc">Desc</option> 
+        </select>
+        <label for="c">Ver</label>
+        <select name="c" id="selectQuantityDisplayed" onchange="handleSelect(event)">
+            <option value="-">todos los </option>
+            <option value="2">2</option>
+            <option value="5">5</option> 
+            <option value="10" selected>10</option> 
+        </select>
+        <label for="c"> productos</label>
+    </div>
     <div style="display: grid; grid-template-columns: repeat(3, 1fr);
                 grid-gap: 10px;
                 grid-auto-rows: minmax(100px, auto);
-                justify-items: center"
+                justify-items: center;
+                flex: 1;"
          id="productsGrid">
             
+
+    </div>
+    <div id="paginationContainer" style="display:flex;">
+        <div id="prevPageBtn">
+        </div>
+        <div id="currentPage">
+            
+        </div>
+        <div id="nextPageBtn">
+        </div>
 
     </div>
     

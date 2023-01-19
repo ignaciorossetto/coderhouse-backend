@@ -62,6 +62,27 @@ import { cartModel } from "../dao/models/carts.model.js";
       res.status(404).json({ message: "Error deleting carts", error: error });
     }
   }
+
+  export const addProductToCart = async(req,res)=>{
+    try {
+        const cid = Number(req.params.cid)
+        const pid = Number(req.params.pid)
+        const cart = await manager.getById(cid)
+        const product = await prodManager.getProductById(pid)
+        if(!cart){
+            res.json('Cart ID does not exists')
+            return
+        }
+        if(!product){
+            res.json('Product ID does not exists')
+            return
+        }
+        const response = await manager.addProductToCart(cid, pid)
+        res.json(response)
+    } catch (error) {
+     res.json(error)   
+    }
+}
   
 
 
