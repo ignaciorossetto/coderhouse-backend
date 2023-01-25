@@ -6,12 +6,35 @@ import productsRouter from "./routes/products.router.js";
 import cartsRoute from "./routes/carts.router.js";
 import messagesRoute from "./routes/messages.router.js";
 import viewsRouter from "./routes/views.router.js";
+import usersRouter from "./routes/users.router.js";
 import { Server } from "socket.io";
+import session from 'express-session'
+import MongoStore from 'connect-mongo'
 
 const app = express();
 
+
+
 // jsonparser
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+// session config
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: "mongodb+srv://karamhechoamano:5o2n6vqd1wraEe0b@cluster0.rvafqda.mongodb.net/desafio_complementario_1?retryWrites=true&w=majority",
+    dbName: "myFirstDatabase",
+    mongoOptions: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    },
+    ttl: 30
+  }),
+  secret: '123456',
+  resave: true,
+  ttl:200,
+  saveUninitialized: true
+}));
 
 // static files config
 app.use(express.static(__dirname + "/public"));
@@ -26,6 +49,7 @@ app.use("/", viewsRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRoute);
 app.use("/api/messages", messagesRoute);
+app.use("/api/users", usersRouter);
 
 // server and db config and init
 mongoose.connect(

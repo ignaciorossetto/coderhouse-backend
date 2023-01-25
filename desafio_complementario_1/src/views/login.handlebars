@@ -1,0 +1,26 @@
+<div style="width: 100%; display:flex; flex-direction: column;  align-items: center;">
+    <div style="width: 100%; max-width: 1024px; display:flex; flex-direction: column; justify-content:center; align-items: center;">
+        <h1>Login</h1>  
+        <form action="/api/users/login" method="post">
+            <div style="width: 100%; display:flex;justify-content:space-between;">
+            <label style="margin-right: 15px;">Usuario:</label>
+            <input name="name" type="text" placeholder="ex: Juan"/>
+            </div>
+            <br>
+            <div style="width: 100%; display:flex;justify-content:space-between;">
+            <label style="margin-right: 15px;">Contraseña:</label>
+            <input name="password" type="password"/> 
+            </div>
+            <br>
+            <input type="submit" value="Ingresar!"/>
+        </form>
+            <br>
+            <br>
+            <a href="/register">
+                <button onclick="(e)=>e.preventDefault()">Registrarse</button>
+            </a>
+
+    </div>
+</div>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/scripts/login.js"></script>

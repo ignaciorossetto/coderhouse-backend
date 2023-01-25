@@ -5,7 +5,56 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
+</head >
+<header style="width: 100%; display: flex; justify-content:center;">
+    <div style="width: 100%; max-width:1024px; display: flex; justify-content:space-between;">
+
+    <div>
+        <h3 id="loginBtn">
+            <a href="http://localhost:5000/login/">
+            Login
+            </a>
+        </h3>
+        <h3 >
+            <button id="logoutBtn" >
+            Logout
+            </button>
+        </h3>
+        <h3 >
+            <a href="http://localhost:5000/register/">
+            Register
+            </a>
+        </h3>
+    </div>
+    <div style="align-self: center;">
+        <a href="/products">
+            <h3>Home</h3>
+        </a>
+        <a href="/private">
+            <h3>Private</h3>
+        </a>
+    </div>
+    <div>
+        <h3 >
+            <a href="http://localhost:5000/messages/">
+            Chatear con un vendedor
+            </a>
+        </h3>
+        <h3 >
+            <a href="http://localhost:5000/cart/">
+            Ver Carrito
+            </a>
+        </h3>
+        <h3 >
+            <a href="http://localhost:5000/admin/">
+            ADMIN
+            </a>
+        </h3>
+    </div>
+    </div>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/scripts/main.js"></script>
+</header>
 <body>
     {{{body}}}
 </body>

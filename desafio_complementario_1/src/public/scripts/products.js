@@ -31,12 +31,10 @@ const handlePaginate = async (url) => {
   let url1 = url.replace("-", "'")
   const response = await fetch(url1);
   const data = await response.json();
-  console.log(data);
   display(data.payload, data);
 };
 
 const display = async (productsArray,data) => {
-  console.log(data);
   productsGrid.innerHTML = ``;
   productsArray.forEach((element) => {
     productsGrid.innerHTML += `
@@ -72,5 +70,27 @@ window.onload = async () => {
   });
   const response = await fetch(`http://localhost:5000/api/products?`);
   const data = await response.json();
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+  if (params.name){
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: `Bienvenido ${params.name}!`,
+      showConfirmButton: false,
+      timer: 1500,
+      toast: true
+    })
+  }
   await display(data.payload, data);
 };
+
+
+// Swal.fire({
+//   position: 'top-end',
+//   icon: 'success',
+//   title: `Bienvenido!`,
+//   showConfirmButton: false,
+//   timer: 1500,
+//   toast: true
+// })

@@ -40,11 +40,7 @@ export const getProductById = async (req, res) => {
   if (ide === 'categories') {
     const response = await productModel.find();
     const Prod_categories = response.map(({category})=> (category))
-    const unique_cat = new Set(Prod_categories)
-    let categories = []
-    for (const cate of unique_cat) {
-      categories.push(cate)
-    }
+    const categories = [...new Set(Prod_categories)]
     return res.status(200).json(categories);
   }
 
@@ -104,7 +100,11 @@ export const deleteall = async (req, res) => {
 export const getAllCategories = async(req, res) => {
   try {
     const products = await productModel.find()
+    const {category} = await productModel.find()
+    console.log(category); 
+    console.log(products); 
     res.status(200).json(products)
+    
   } catch (error) {
     
   }

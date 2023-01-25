@@ -1,5 +1,6 @@
 import { productModel } from "../dao/models/product.model.js";
 
+
 export const indexView = async (req, res) => {
   res.render("home", {});
 };
@@ -35,4 +36,18 @@ export const productsView = async (req, res) => {
 };
 export const productView = async (req, res) => {
   res.render("product", {});
+};
+
+export const loginView = async (req, res) => {
+  res.render("login", {});
+};
+export const registerView = async (req, res) => {
+  res.render("register", {});
+};
+
+export const privateView = async (req, res) => {
+  res.render("private", {});
+};
+export const adminView = async (req, res) => {
+  res.render("admin", {});
 };
