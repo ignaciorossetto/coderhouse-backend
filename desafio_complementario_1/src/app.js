@@ -10,20 +10,25 @@ import usersRouter from "./routes/users.router.js";
 import { Server } from "socket.io";
 import session from 'express-session'
 import MongoStore from 'connect-mongo'
+import initialazePassport from "./config/passport.config.js";
+import passport from 'passport'
+
 
 const app = express();
 
-
+const dbName = 'desafio_complementario_1'
 
 // jsonparser
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+
+
 // session config
 app.use(session({
   store: MongoStore.create({
     mongoUrl: "mongodb+srv://karamhechoamano:5o2n6vqd1wraEe0b@cluster0.rvafqda.mongodb.net/desafio_complementario_1?retryWrites=true&w=majority",
-    dbName: "myFirstDatabase",
+    dbName,
     mongoOptions: {
       useNewUrlParser: true,
       useUnifiedTopology: true
@@ -35,6 +40,11 @@ app.use(session({
   ttl:200,
   saveUninitialized: true
 }));
+
+// Seteo de passport en app
+initialazePassport()
+app.use(passport.initialize())
+app.use(passport.session())
 
 // static files config
 app.use(express.static(__dirname + "/public"));

@@ -3,8 +3,8 @@
         <h1>Login</h1>  
         <form action="/api/users/login" method="post">
             <div style="width: 100%; display:flex;justify-content:space-between;">
-            <label style="margin-right: 15px;">Usuario:</label>
-            <input name="name" type="text" placeholder="ex: Juan"/>
+            <label style="margin-right: 15px;">Email:</label>
+            <input name="email" type="email" placeholder="ex: juan@hotmail.com"/>
             </div>
             <br>
             <div style="width: 100%; display:flex;justify-content:space-between;">
@@ -16,6 +16,14 @@
         </form>
             <br>
             <br>
+            <div style="width: 100%; display:flex;justify-content:center;margin:20px 0px;">
+                <button>
+                    <a href="http://localhost:5000/api/users/login/github">Github</a>
+                </button>
+                <button style="margin:0px 5px;">
+                    <a href="http://localhost:5000/api/users/login/google">Google</a>
+                </button>
+            </div>
             <a href="/register">
                 <button onclick="(e)=>e.preventDefault()">Registrarse</button>
             </a>

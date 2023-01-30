@@ -1,18 +1,11 @@
 const logoutBtn = document.getElementById('logoutBtn')
 const loginBtn = document.getElementById('loginBtn')
+const registerBtn = document.getElementById('registerBtn')
 
 const handleClick = async() => {
     try {
-        const response = await fetch('http://localhost:5000/api/users/logout')
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: `Cerraste sesion correctamente!`,
-            showConfirmButton: false,
-            timer: 1500,
-            toast: true
-          })
-          loginBtn.style.display = ''
+        await fetch('http://localhost:5000/api/users/logout')
+          window.location.replace('http://localhost:5000/login?logout_status=success')
           displayLogOut()
     } catch (error) {
         
@@ -26,9 +19,12 @@ const displayLogOut = async() => {
         const response = await fetch('http://localhost:5000/api/users/check')
         const data = await response.json()
         loginBtn.style.display = 'none'
+        registerBtn.style.display = 'none'
         return
     } catch (error) {
         logoutBtn.style.display = 'none'
+        registerBtn.style.display = ''
+        loginBtn.style.display = ''
         return
     }
 }

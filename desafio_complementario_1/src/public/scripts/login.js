@@ -13,4 +13,24 @@ window.onload = () => {
             toast: true
           })
     }
+    if (params.logout_status === 'success') {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: `Cerraste cesion exitosamente`,
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true
+          })
+    }
+    if (params.login_status === 'failed') {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'warning',
+            title: `Usuario y/o contraseña incorrecta`,
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true
+          })
+    }
 }
