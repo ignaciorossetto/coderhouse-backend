@@ -11,7 +11,6 @@ const LocalStrategy = local.Strategy
 
 const initialazePassport = () => {
 
-    // anotar esta duda para el profe: github no viene con mail.. ok Como creo en mi base de datos a ese usuario si mi log in de username/pass es de acuerdo al email?? Que pasa si por ejemplo en caso de guardar el email (imaginando que viniese en el profile de passport-github2) y alguien ya se registro con ese email en mi db (registrandose en mi pagina manualmente...)
 
     passport.use('google', new GoogleStrategy(
         {
