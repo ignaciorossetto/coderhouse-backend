@@ -59,8 +59,11 @@ const cartSchema = new mongoose.Schema({
         quantity: Number,
       },
     ],
-    _id: false
-  },
+    _id: false,
+  }
+},
+{
+  timestamps:true
 });
 
 cartSchema.pre('findOne', function() {

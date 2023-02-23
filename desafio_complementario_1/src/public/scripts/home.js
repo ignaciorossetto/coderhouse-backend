@@ -2,6 +2,8 @@
 const homeList = document.getElementById('httpList')
 const socket = io();
 
+console.log(document.cookie);
+
 
 const products = async() => {
     const response = await fetch('http://localhost:5000/api/products')

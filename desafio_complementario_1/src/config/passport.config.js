@@ -2,35 +2,74 @@ import passport from 'passport'
 import local from 'passport-local'
 import { userModel } from '../dao/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
-import GitHubStrategy from 'passport-github2'
 import GoogleStrategy from 'passport-google-oauth20'
+import jwt from 'passport-jwt'
+import { cartModel } from '../dao/models/carts.model.js'
+import config from './config.js'
 
 
 
+const cookieExtractor = (req) => {
+    let token = null
+    if (req && req.cookies){
+        token = req.cookies['coderCookieToken']
+    }
+    return token
+}
+
+const JWTStrategy = jwt.Strategy
+const ExtractJWT = jwt.ExtractJwt
 const LocalStrategy = local.Strategy
 
 const initialazePassport = () => {
 
+    passport.use('jwt', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: config.jwtSecret
+
+    }, async(jwt_payload, done)=>{
+
+        try {
+            return done(null, jwt_payload)
+        } catch (error) {
+            return done(error)
+        }
+    }))
+
 
     passport.use('google', new GoogleStrategy(
         {
-        clientID: '73974643169-ddvbka69v8m1g3a8e2igfs286kodf6uu.apps.googleusercontent.com',
-        clientSecret: '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',
-        callbackURL: "http://localhost:5000/api/users/login/google/callback",
-        passReqToCallback: true
+        clientID: config.googleClientID,
+        clientSecret: config.googleClientSecret,
+        callbackURL: `${config.localHost}${config.googleCallBackUrlEndpoint}`,
+        passReqToCallback: true,
+        scope: [ 'profile', 'email' ],
+        failureFlash: true,
         },
         async (req, accessToken, refreshToken, profile, done) => {
             try {
                 const user = await userModel.findOne({email: profile._json.email})
                 if (user) {
-                    return done(null, user)
+                    if (user?.strategy === 'google') {
+                        return done(null, user)
+                    }
+                    if (user?.strategy !== 'google') {
+                        return done(null, false, {message: 'user already created with other platform'})
+                    }
                 }
+                const newCart = await cartModel.create({})
                 const newUser = {
                     name: profile._json.name,
                     email: profile._json.email,
-                    password: ''
+                    password: '',
+                    carts: [{
+                        cart: newCart._id,
+                        confirmed: false
+                    }],
+                    strategy: 'google'
                 }
                 const result = await userModel.create(newUser)
+                req.user = result
                 return done(null, result)
             } catch (error) {
                 console.log(error);
@@ -38,30 +77,6 @@ const initialazePassport = () => {
          }
       ))
 
-    passport.use('github', new GitHubStrategy(
-        {
-        clientID: 'Iv1.68b5d5a3cd41ad22',
-        clientSecret: 'd2db33c407825d8a293a9b47fa8f6ed836e8f9da',
-        callbackUrl: 'http://localhost:5000/api/users/login/github/callback'
-        },
-        async(accessToken, refreshToken, profile, done)=>{
-            try {
-                const user = await userModel.findOne({email: profile._json.email})
-                if (user) {
-                    return done(null, user)
-                }
-                const newUser = {
-                    name: profile._json.name,
-                    email: profile._json.email,
-                    password: ''
-                }
-                const result = await userModel.create(newUser)
-                return done(null, result)
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    ))
 
     passport.use('register', new LocalStrategy(
         {
@@ -73,17 +88,21 @@ const initialazePassport = () => {
             try {
                 const user = await userModel.findOne({email: username})
                 if(user){
-                    return done(null, false, {message: 'Ya existe un usuario registrado con este mail'})
+                    return done(null, false, {messages: 'Ya existe un usuario registrado con este mail'})
                 }
+                const newCart = await cartModel.create({})
                 const newUser = {
                     name,
                     email,
-                    password: createHash(password)
+                    password: createHash(password),
+                    carts: [{
+                        cart: newCart._id,
+                    }],
+                    strategy: 'local'
                 }
                 const result = await userModel.create(newUser)
                 return done(null, result)
             } catch (error) {
-                console.log('estamos aca', error);
                 return done('Error al crear un usuario' + error, false)
             }
         }
@@ -91,14 +110,18 @@ const initialazePassport = () => {
 
     passport.use('login', new LocalStrategy({
         usernameField: 'email',
+        session: false
     }, async(username, password, done) => { 
         try {
             const user = await userModel.findOne({email: username})
             if (!user) {
-                return done(null, false, {message: 'Usuario/Password inexistente'})   
+                return done(null, false, {messages: 'Usuario/Password inexistente'})   
+            }
+            if (user.strategy !== 'local') {
+                return done(null, false, {messages: 'Usuario generado a traves de otra plataforma'})   
             }
             if (!isValidPassword(user, password)) {
-                return done(null, false, {message: 'Usuario/Password inexistente'})            
+                return done(null, false, {messages: 'Usuario/Password inexistente'})            
             }
             return done(null, user)
         } catch (error) {
@@ -109,7 +132,12 @@ const initialazePassport = () => {
 
 
     passport.serializeUser((user, done) => {
-        done(null, user._id)
+        if (user._id) {
+            return done(null, user._id)
+        }
+        if (user.user._doc._id) {
+            return done(null, user.user._doc._id)
+        }
     })
     passport.deserializeUser(async (id, done) => {
         const user = await userModel.findById(id)

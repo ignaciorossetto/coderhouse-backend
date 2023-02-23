@@ -33,4 +33,14 @@ window.onload = () => {
             toast: true
           })
     }
+    if (params.login_status === 'Gfailed') {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'warning',
+            title: `El usuario ya se registro con otra plataforma`,
+            showConfirmButton: false,
+            timer: 2000,
+            toast: true
+          })
+    }
 }

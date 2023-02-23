@@ -12,22 +12,24 @@ import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import initialazePassport from "./config/passport.config.js";
 import passport from 'passport'
+import cookieParser from 'cookie-parser'
+import config from "./config/config.js";
 
-
+const PORT = config.port
 const app = express();
 
-const dbName = 'desafio_complementario_1'
+const dbName = config.dbName
 
 // jsonparser
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-
+app.use(cookieParser())
 
 
 // session config
 app.use(session({
   store: MongoStore.create({
-    mongoUrl: "mongodb+srv://karamhechoamano:5o2n6vqd1wraEe0b@cluster0.rvafqda.mongodb.net/desafio_complementario_1?retryWrites=true&w=majority",
+    mongoUrl: config.mongoUrl,
     dbName,
     mongoOptions: {
       useNewUrlParser: true,
@@ -63,7 +65,7 @@ app.use("/api/users", usersRouter);
 
 // server and db config and init
 mongoose.connect(
-  "mongodb+srv://karamhechoamano:5o2n6vqd1wraEe0b@cluster0.rvafqda.mongodb.net/desafio_complementario_1?retryWrites=true&w=majority",
+  config.mongoUrl,
   (err) => {
     if (err) {
       console.log("Could not connect to database");
@@ -73,8 +75,8 @@ mongoose.connect(
   }
 );
 
-const httpServer = app.listen(5000, () => {
-  console.log("Listening server on port 5000");
+const httpServer = app.listen(PORT, () => {
+  console.log(`Listening server on port ${PORT}`);
 });
 
 const io = new Server(httpServer)

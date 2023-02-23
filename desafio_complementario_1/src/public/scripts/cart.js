@@ -1,24 +1,25 @@
-const userCartId = '63c93ca99aa5414d9ef74eb9'
+let currentCart
+let userCartId
 
 const deleteHandler = async(id) => {
-  const response = await axios.get(`http://localhost:5000/api/carts/${userCartId}`)
-  const {cart : {shopCart}} = response.data
-  const index = shopCart.findIndex(({ product: {_id} }) => _id === id);
+  const {cart : {shopCart}} = currentCart
+  const index = shopCart.findIndex(({ product }) => product === id);
   shopCart[index].quantity -= 1;
   if (shopCart[index].quantity <= 0){
     shopCart.splice(index, 1)
   }
   await axios.put(`http://localhost:5000/api/carts/${userCartId}`, {shopCart: shopCart})
-  renderCart()
+  renderCart(userCartId)
 };
 
-const renderCart = async() => {
-  const response = await axios.get(`http://localhost:5000/api/carts/${userCartId}`)
+
+
+const renderCart = async(cartID) => {
+  const response = await axios.get(`http://localhost:5000/api/carts/${cartID}`)
   const {cart : {shopCart}} = response.data
   let cartContainer = document.getElementById("cartContainer");
   let total = 0;
   cartContainer.innerHTML = ''
-  console.log(shopCart);
   shopCart.forEach((element) => {
     cartContainer.innerHTML += `
         <div>
@@ -43,4 +44,11 @@ const renderCart = async() => {
 };
 
 
-renderCart()
+
+window.onload = async() => {
+  const response = await fetch('http://localhost:5000/api/users/check')
+  const data = await response.json()
+  currentCart = data.user.currentCart
+  userCartId = currentCart.cart._id
+  renderCart(userCartId)
+}

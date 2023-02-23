@@ -9,4 +9,3 @@ Client ID: 73974643169-ddvbka69v8m1g3a8e2igfs286kodf6uu.apps.googleusercontent.c
 Client secret: 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
 Callback URI: http://localhost:5000/api/users/login/google/callback
 
-//  FACEBOOK

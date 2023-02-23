@@ -7,8 +7,7 @@ const usersCollection = "users";
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String,
-        unique: true
+        type: String
     },
     password: String,
     email: {
@@ -18,8 +17,31 @@ const userSchema = new mongoose.Schema({
     admin: {
         type: Boolean,
         default: false
+    },
+    strategy: {
+        type: String,
+        required: true
+    },
+    carts: {
+        type: [
+            {
+              cart: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "carts",
+              },
+              confirmed: {
+                type:Boolean,
+                default:false
+              },
+            },
+          ],
+          _id: false
     }
 });
+
+userSchema.pre('findOne', function() {
+    this.populate('carts.cart')
+  })
 
 // Model creation. Collection + Schema
 export const userModel = mongoose.model(usersCollection, userSchema);

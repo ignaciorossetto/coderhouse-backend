@@ -46,7 +46,17 @@ export const registerView = async (req, res) => {
 };
 
 export const privateView = async (req, res) => {
-  res.render("private", {});
+  res.render("layouts/user/private", {user: req.user});
+};
+export const lastPurchasesView = async (req, res) => {
+  res.render("layouts/user/lastPurchases", {user: req.user});
+};
+export const lastPurchasesInfoView = async (req, res) => {
+  const id = req.params.id
+  res.render("layouts/user/lastPurchasesInfo", {user: req.user, cartId: id});
+};
+export const changePasswordView = async (req, res) => {
+  res.render("layouts/user/changePassword", {user: req.user});
 };
 export const adminView = async (req, res) => {
   res.render("admin", {});

@@ -1,5 +1,7 @@
 const createProductButton = document.getElementById('createProductButton')
-const userCartId = '63c93ca99aa5414d9ef74eb9'
+let userCartId
+let currentCartIndex
+let userId
 
 createProductButton.addEventListener('click', async(e)=> {
     e.preventDefault()
@@ -25,19 +27,22 @@ createProductButton.addEventListener('click', async(e)=> {
             timer: 1500,
             toast: true
         })
-        const response = await axios.put(`http://localhost:5000/api/carts/${userCartId}`, {shippingInfo: ship, paymentInfo: payment})
-        window.location.href('/products')
+        await axios.put(`/api/carts/${userCartId}`, {shippingInfo: ship, paymentInfo: payment})
+        await axios.post(`/api/users/modify/${userId}`, {
+            "$set": {[`carts.${currentCartIndex}.confirmed`]: true, timeStamp: new Date().toDateString()}
+        })
         return 
         
     } catch (error) {
+        console.log(error);
+
         return
     }
 })
 
 const display = async() => {
     const response = await axios.get(`http://localhost:5000/api/carts/${userCartId}`)
-      const {cart : {shopCart}} = response.data
-      console.log(shopCart);
+    const {cart : {shopCart}} = response.data
     let cartResume = document.getElementById('cartResume')
     let total = 0
     shopCart.forEach(element => {
@@ -60,4 +65,14 @@ const display = async() => {
 
 }
 
-display()
+
+
+window.onload = async() => {
+    const response = await fetch('http://localhost:5000/api/users/check')
+    const data = await response.json()
+    currentCartIndex = data.user.carts.findIndex(c=>c.confirmed === false)
+    currentCart = data.user.currentCart
+    userId = data.user._id
+    userCartId = currentCart.cart._id
+    display()
+}

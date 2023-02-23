@@ -4,6 +4,9 @@ const productContainer = document.getElementById("productContainer");
 
 
 window.onload = async () => {
+  const user = await fetch('http://localhost:5000/api/users/check')
+  const userData = await user.json()
+  const {currentCart} = userData.user
   const value = document.URL.split("/")[4];
   const response = await fetch(`http://localhost:5000/api/products/${value}`);
   const { product } = await response.json();
@@ -23,9 +26,6 @@ window.onload = async () => {
 const addCartButton = document.getElementById("addCartButton");
 
   addCartButton.addEventListener("click", async(e) => {
-    const response = await fetch('http://localhost:5000/api/carts')
-    const data = await response.json()
-    console.log(data);
     const id = document.getElementById('productId').innerText
     Swal.fire({
       position: 'top-end',
@@ -35,30 +35,19 @@ const addCartButton = document.getElementById("addCartButton");
       timer: 1500,
       toast: true
     })
-    // No existe carrito . Un carrito por usuario.
-    if (data.length === 0) {
-      await axios.post('http://localhost:5000/api/carts', {
-        cart:[{
-          product: id,
-          quantity: 1
-        }]
-      })
-      return
-    }
-    const cartId = data[0]._id
-    const {shopCart} = data[0]
-    console.log(shopCart);
-    if(!shopCart.some(({product})=> product === id)){
+    const {shopCart} = currentCart.cart
+    if(!shopCart.some((aa)=>{
+      return aa.product === id})){
         const obj={
             product: id,
             quantity: 1
         }
         shopCart.push(obj)
-        await axios.put(`http://localhost:5000/api/carts/${cartId}`, {shopCart : shopCart})
+        await axios.put(`http://localhost:5000/api/carts/${currentCart.cart._id}`, {shopCart : shopCart})
     } else {
-        const index = shopCart.findIndex(({product})=> product === id)
+        const index = shopCart.findIndex((aa)=> aa.product === id)
         shopCart[index].quantity += 1
-        await axios.put(`http://localhost:5000/api/carts/${cartId}`, {shopCart : shopCart})
+        await axios.put(`http://localhost:5000/api/carts/${currentCart.cart._id}`, {shopCart : shopCart})
     }
 
   });
