@@ -4,6 +4,7 @@ const productContainer = document.getElementById("productContainer");
 
 
 window.onload = async () => {
+  try {
   const user = await fetch('http://localhost:5000/api/users/check')
   const userData = await user.json()
   const {currentCart} = userData.user
@@ -51,4 +52,7 @@ const addCartButton = document.getElementById("addCartButton");
     }
 
   });
-};
+  } catch (error) {
+    productTitle.innerText = `DEBES INICIAR SESION PARA VER EL PRODUCTO`;
+  }
+}

@@ -16,7 +16,7 @@ export const passportCall = (strategy, obj) => {
             }
             if(!user){
                 return res.status(401).render('errors/base', {
-                    error: info.messages ? info.messages : info.toString()
+                    error: info?.messages ? info.messages : info?.toString()
                 })
             }
             req.user = user

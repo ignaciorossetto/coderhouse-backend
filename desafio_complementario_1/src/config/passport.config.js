@@ -1,11 +1,12 @@
 import passport from 'passport'
 import local from 'passport-local'
-import { userModel } from '../dao/models/user.model.js'
+import { userModel } from '../dao/mongo/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
 import GoogleStrategy from 'passport-google-oauth20'
 import jwt from 'passport-jwt'
-import { cartModel } from '../dao/models/carts.model.js'
+import { cartModel } from '../dao/mongo/models/carts.model.js'
 import config from './config.js'
+import { CartService, UserService } from '../repository/index.js'
 
 
 
@@ -48,7 +49,7 @@ const initialazePassport = () => {
         },
         async (req, accessToken, refreshToken, profile, done) => {
             try {
-                const user = await userModel.findOne({email: profile._json.email})
+                const user = await UserService.getOne({email: profile._json.email})
                 if (user) {
                     if (user?.strategy === 'google') {
                         return done(null, user)
@@ -57,7 +58,7 @@ const initialazePassport = () => {
                         return done(null, false, {message: 'user already created with other platform'})
                     }
                 }
-                const newCart = await cartModel.create({})
+                const newCart = await CartService.create({})
                 const newUser = {
                     name: profile._json.name,
                     email: profile._json.email,
@@ -68,7 +69,7 @@ const initialazePassport = () => {
                     }],
                     strategy: 'google'
                 }
-                const result = await userModel.create(newUser)
+                const result = await UserService.create(newUser)
                 req.user = result
                 return done(null, result)
             } catch (error) {
@@ -86,11 +87,11 @@ const initialazePassport = () => {
         async(req, username, password, done) => {
             const {name, email} = req.body
             try {
-                const user = await userModel.findOne({email: username})
+                const user = await UserService.getOne({email: username})
                 if(user){
                     return done(null, false, {messages: 'Ya existe un usuario registrado con este mail'})
                 }
-                const newCart = await cartModel.create({})
+                const newCart = await CartService.create({})
                 const newUser = {
                     name,
                     email,
@@ -100,7 +101,7 @@ const initialazePassport = () => {
                     }],
                     strategy: 'local'
                 }
-                const result = await userModel.create(newUser)
+                const result = await UserService.create(newUser)
                 return done(null, result)
             } catch (error) {
                 return done('Error al crear un usuario' + error, false)
@@ -113,7 +114,7 @@ const initialazePassport = () => {
         session: false
     }, async(username, password, done) => { 
         try {
-            const user = await userModel.findOne({email: username})
+            const user = await UserService.getOne({email: username})
             if (!user) {
                 return done(null, false, {messages: 'Usuario/Password inexistente'})   
             }
@@ -130,19 +131,19 @@ const initialazePassport = () => {
      }
     ))
 
-
-    passport.serializeUser((user, done) => {
-        if (user._id) {
-            return done(null, user._id)
-        }
-        if (user.user._doc._id) {
-            return done(null, user.user._doc._id)
-        }
-    })
-    passport.deserializeUser(async (id, done) => {
-        const user = await userModel.findById(id)
-        done(null, user)
-    })
+     // for sessions
+    // passport.serializeUser((user, done) => {
+    //     if (user._id) {
+    //         return done(null, user._id)
+    //     }
+    //     if (user.user._doc._id) {
+    //         return done(null, user.user._doc._id)
+    //     }
+    // })
+    // passport.deserializeUser(async (id, done) => {
+    //     const user = await userModel.findById(id)
+    //     done(null, user)
+    // })
 }
 
 

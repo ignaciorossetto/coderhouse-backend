@@ -1,4 +1,4 @@
-import { productModel } from "../dao/models/product.model.js";
+import { productModel } from "../dao/mongo/models/product.model.js";
 
 
 export const indexView = async (req, res) => {
@@ -59,5 +59,5 @@ export const changePasswordView = async (req, res) => {
   res.render("layouts/user/changePassword", {user: req.user});
 };
 export const adminView = async (req, res) => {
-  res.render("admin", {});
+  res.render("admin", {admin: 'Bienvenido Admin'});
 };

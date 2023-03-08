@@ -1,4 +1,4 @@
-import { messageModel } from "../dao/models/messages.model.js" 
+import { messageModel } from "../dao/mongo/models/messages.model.js" 
 
 export const getAllMessages = async (req, res) => {
   let data = await messageModel.find()

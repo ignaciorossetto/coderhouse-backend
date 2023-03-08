@@ -27,26 +27,27 @@ app.use(cookieParser())
 
 
 // session config
-app.use(session({
-  store: MongoStore.create({
-    mongoUrl: config.mongoUrl,
-    dbName,
-    mongoOptions: {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    },
-    ttl: 30
-  }),
-  secret: '123456',
-  resave: true,
-  ttl:200,
-  saveUninitialized: true
-}));
+
+// app.use(session({
+//   store: MongoStore.create({
+//     mongoUrl: config.mongoUrl,
+//     dbName,
+//     mongoOptions: {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true
+//     },
+//     ttl: 30
+//   }),
+//   secret: '123456',
+//   resave: true,
+//   ttl:200,
+//   saveUninitialized: true
+// }));
 
 // Seteo de passport en app
 initialazePassport()
 app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.session())
 
 // static files config
 app.use(express.static(__dirname + "/public"));

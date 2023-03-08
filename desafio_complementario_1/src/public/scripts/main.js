@@ -10,7 +10,7 @@ const handleClick = async() => {
           window.location.replace('http://localhost:5000/login?logout_status=success')
           displayLogOut()
     } catch (error) {
-        
+        console.log(error);
     }
 }
 

@@ -1,5 +1,6 @@
-import { productModel } from "../dao/models/product.model.js";
-import { cartModel } from "../dao/models/carts.model.js";
+import { cartModel } from "../dao/mongo/models/carts.model.js";
+import { ProductService } from "../repository/index.js";
+
 
 export const getAllProducts = async (req, res) => {
   let categoryName = req.query.category
@@ -10,7 +11,7 @@ export const getAllProducts = async (req, res) => {
   const sortQuery = req.query.sort
 
   try {
-      const response = await productModel.paginate(catQuery, {
+      const response = await ProductService.getAllPaginate(catQuery, {
         limit: limitQuery, page: pageQuery, sort: sortQuery === 'asc' ? {price:1} : sortQuery === 'desc' ? {price:-1} : {}
       })
       if(categoryName === "men's clothing" || categoryName === "women's clothing"){
@@ -38,7 +39,7 @@ export const getProductById = async (req, res) => {
   const ide = req.params.id;
 
   if (ide === 'categories') {
-    const response = await productModel.find();
+    const response = await ProductService.getAll();
     const Prod_categories = response.map(({category})=> (category))
     const categories = [...new Set(Prod_categories)]
     return res.status(200).json(categories);
@@ -46,7 +47,7 @@ export const getProductById = async (req, res) => {
 
   try {
     const id = req.params.id;
-    const response = await productModel.findById(id);
+    const response = await ProductService.getOne(id);
     if (!response) {
       res.status(404).json({ message: "Product not found" });
       return;
@@ -60,7 +61,7 @@ export const getProductById = async (req, res) => {
 export const addProduct = async (req, res) => {
   // body must be like product model, anyway all fields are required
   try {
-    const response = await productModel.create(req.body);
+    const response = await ProductService.add(req.body);
     res.json({ product: response, status: "success" });
   } catch (error) {
     res.status(404).json({ message: "Error creating product", error: error });
@@ -71,7 +72,7 @@ export const updateProduct = async (req, res) => {
   try {
     const id = req.params.id;
     const obj = req.body;
-    const response = await productModel.findByIdAndUpdate({ _id: id }, obj);
+    const response = await ProductService.update(id, obj);
     res.json({ product: response, status: "success" });
   } catch (error) {
     res.status(404).json({ message: "Error updating product", error: error });
@@ -81,7 +82,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProductById = async (req, res) => {
   try {
     const id = req.params.id;
-    const response = await productModel.findByIdAndDelete(id);
+    const response = await ProductService.delete(id);
     res.json({ product: response, status: "success" });
   } catch (error) {
     res.status(404).json({ message: "Error deleting product", error: error });
@@ -90,22 +91,10 @@ export const deleteProductById = async (req, res) => {
 
 export const deleteall = async (req, res) => {
   try {
-    const response = await productModel.deleteMany({});
+    const response = await ProductService.deleteAll();
     res.json({ product: response, status: "success" });
   } catch (error) {
     res.status(404).json({ message: "Error deleting products", error: error });
   }
 };
 
-export const getAllCategories = async(req, res) => {
-  try {
-    const products = await productModel.find()
-    const {category} = await productModel.find()
-    console.log(category); 
-    console.log(products); 
-    res.status(200).json(products)
-    
-  } catch (error) {
-    
-  }
-}
