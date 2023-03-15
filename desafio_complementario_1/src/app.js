@@ -8,17 +8,15 @@ import messagesRoute from "./routes/messages.router.js";
 import viewsRouter from "./routes/views.router.js";
 import usersRouter from "./routes/users.router.js";
 import { Server } from "socket.io";
-import session from 'express-session'
-import MongoStore from 'connect-mongo'
 import initialazePassport from "./config/passport.config.js";
 import passport from 'passport'
 import cookieParser from 'cookie-parser'
 import config from "./config/config.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 const PORT = config.port
 const app = express();
 
-const dbName = config.dbName
 
 // jsonparser
 app.use(express.json());
@@ -63,6 +61,9 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRoute);
 app.use("/api/messages", messagesRoute);
 app.use("/api/users", usersRouter);
+
+// errorHandler middleware
+app.use(errorHandler)
 
 // server and db config and init
 mongoose.connect(

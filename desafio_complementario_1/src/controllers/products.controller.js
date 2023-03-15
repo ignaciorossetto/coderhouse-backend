@@ -1,8 +1,8 @@
-import { cartModel } from "../dao/mongo/models/carts.model.js";
 import { ProductService } from "../repository/index.js";
+import CustomError from "../services/errors/customError.js";
 
 
-export const getAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res, next) => {
   let categoryName = req.query.category
   const catQuery = categoryName === undefined || categoryName === 'undefined'  ? {} : {category: categoryName}
   
@@ -14,6 +14,15 @@ export const getAllProducts = async (req, res) => {
       const response = await ProductService.getAllPaginate(catQuery, {
         limit: limitQuery, page: pageQuery, sort: sortQuery === 'asc' ? {price:1} : sortQuery === 'desc' ? {price:-1} : {}
       })
+      if (!response) {
+        return CustomError.createError({
+          name: "DB error",
+          code: 2,
+          status: 500,
+          message: "Could not get products from DB",
+          cause: 'Server Error'
+        }) 
+      }
       if(categoryName === "men's clothing" || categoryName === "women's clothing"){
         categoryName = categoryName.replace("'", "-")
       }
@@ -31,51 +40,90 @@ export const getAllProducts = async (req, res) => {
       })
     
   } catch (error) {
-    res.status(400).json(error);
+    next(error)
   }
 };
 
-export const getProductById = async (req, res) => {
+export const getProductById = async (req, res, next) => {
   const ide = req.params.id;
 
   if (ide === 'categories') {
-    const response = await ProductService.getAll();
-    const Prod_categories = response.map(({category})=> (category))
-    const categories = [...new Set(Prod_categories)]
-    return res.status(200).json(categories);
+    try {
+      const response = await ProductService.getAll();
+      if (!response) {
+        return CustomError.createError({
+          name: "DB error",
+          code: 2,
+          status: 500,
+          message: "Could not get categories from DB",
+          cause: 'Server Error'
+        })
+      }
+      const Prod_categories = response.map(({category})=> (category))
+      const categories = [...new Set(Prod_categories)]
+      return res.status(200).json(categories);
+      
+    } catch (error) {
+      next(error)
+    }
   }
 
   try {
     const id = req.params.id;
     const response = await ProductService.getOne(id);
     if (!response) {
-      res.status(404).json({ message: "Product not found" });
-      return;
+      return CustomError.createError({
+        name: "Bad request",
+        code: 2,
+        status: 404,
+        message: "Product not found",
+        cause: 'Bad request'
+      })
     }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Product not found" });
+    console.log('hola')
+    next(error)
   }
 };
 
-export const addProduct = async (req, res) => {
-  // body must be like product model, anyway all fields are required
+export const addProduct = async (req, res, next) => {
+  // body must be like product model, anyway all fields are requiredx
   try {
     const response = await ProductService.add(req.body);
+    console.log('response:', response);
+    if (!response) {
+      return CustomError.createError({
+        name: "Bad request",
+        code: 2,
+        status: 404,
+        message: "Error creating product",
+        cause: 'Bad request'
+      })
+    }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Error creating product", error: error });
+    next(error)
   }
 };
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res, next) => {
   try {
     const id = req.params.id;
     const obj = req.body;
     const response = await ProductService.update(id, obj);
+    if (!response) {
+      return CustomError.createError({
+        name: "Bad request",
+        code: 2,
+        status: 404,
+        message: "Error updating product",
+        cause: 'Bad request'
+      })
+    }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Error updating product", error: error });
+    return next(error)
   }
 };
 
@@ -83,18 +131,36 @@ export const deleteProductById = async (req, res) => {
   try {
     const id = req.params.id;
     const response = await ProductService.delete(id);
+    if (!response) {
+      return CustomError.createError({
+        name: "Bad request",
+        code: 2,
+        status: 404,
+        message: "Error deleting product",
+        cause: 'Bad request'
+      })
+    }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Error deleting product", error: error });
+    return next(error)
   }
 };
 
 export const deleteall = async (req, res) => {
   try {
     const response = await ProductService.deleteAll();
+    if (!response) {
+      return CustomError.createError({
+        name: "Bad request",
+        code: 2,
+        status: 404,
+        message: "Error deleting products",
+        cause: 'Bad request'
+      })
+    }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Error deleting products", error: error });
+    next(error)
   }
 };
 

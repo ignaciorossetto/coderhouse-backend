@@ -7,7 +7,8 @@ import {
     googleLoginCallback,
     modifyUser,
     googleFailedLogin,
-    changePassword
+    changePassword,
+    getFakeUsers
 } from '../controllers/users.controller.js'
 import { passportCall } from "../utils.js";
 
@@ -24,6 +25,7 @@ router.get("/logout",passportCall('jwt'), logOut)
 router.get("/check",passportCall('jwt'), checkLogIn)
 router.put("/changePassword",passportCall('jwt'), changePassword)
 router.post("/modify/:id",passportCall('jwt'), modifyUser)
+router.get('/fakerjs', getFakeUsers)
 
 
 

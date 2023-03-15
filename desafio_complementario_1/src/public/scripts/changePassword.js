@@ -10,16 +10,10 @@ confirmBtn.addEventListener('click', async(e)=> {
     }   
     currentPass.value = ''
     newPass.value = ''
-    
-    response = await axios.put('http://localhost:5000/api/users/changePassword', obj)
-    console.log(response.data.errorCode);
-    if (response.data.errorCode === 0) {
-        return window.location.href = '/error?type=usernotfound' 
-    }
-    if (response.data.errorCode === 2) {
-        return window.location.href = '/error?type=changepass_2' 
-    }
-    if (response.data.errorCode === 3) {
-        return window.location.href = '/error?type=changepass_3' 
+    try {
+        response = await axios.put('http://localhost:5000/api/users/changePassword', obj)
+    } catch (error) {
+        const code = error.response.data.code
+        return window.location.href = `/error?code=usernotfound${code}` 
     }
 })

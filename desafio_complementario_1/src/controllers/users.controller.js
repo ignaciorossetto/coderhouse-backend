@@ -1,7 +1,7 @@
-import { userModel } from "../dao/mongo/models/user.model.js";
 import { createHash, generateToken, isValidPassword } from "../utils.js";
-import { cartModel } from "../dao/mongo/models/carts.model.js";
 import { UserService, CartService } from "../repository/index.js";
+import CustomError from "../services/errors/customError.js";
+import { generateUser } from "../config/faker.js";
 
 
 export const createUser = async (req, res) => {
@@ -18,6 +18,7 @@ export const createUser = async (req, res) => {
   // const response = await addCart()
   res.redirect("http://localhost:5000/login?register=success");
 };
+
 export const logIn = async (req, res) => {
   // const {name, password} = req.body
   // try {
@@ -38,7 +39,12 @@ export const logIn = async (req, res) => {
   //         return
 
   // }
-  if (!req.user) return res.status(401).send("Invalid credentials");
+  if (!req.user) return CustomError.createError({
+    name: "Invalid Credentials",
+    code: 4,
+    status: 401,
+    message: "Invalid credentials, login to access."
+  })
   let user = { ...req.user };
   delete user._doc.password;
   const access_token = generateToken(user);
@@ -61,6 +67,7 @@ export const logOut = async (req, res) => {
     return;
   }
 };
+
 export const privateView = async (req, res) => {
   // try {
   //     res.json({status: 'logged in'})
@@ -69,6 +76,7 @@ export const privateView = async (req, res) => {
   //         return
   // }
 };
+
 export const checkLogIn = async (req, res) => {
   const user = await UserService.getOne({ _id: req.user.user._doc._id });
   delete user._doc.password;
@@ -93,13 +101,23 @@ export const checkLogIn = async (req, res) => {
 };
 
 export const googleLoginCallback = async (req, res) => {
-  if (!req.user) return res.status(401).send("Invalid credentials");
-  let user = { ...req.user };
-  delete user._doc.password;
-  const access_token = generateToken(user);
-  res
-    .cookie("coderCookieToken", access_token)
-    .redirect(`http://localhost:5000/products?login_status=success`);
+  try {
+    if (!req.user) return CustomError.createError({
+      name: "Invalid credentials",
+      code: 4,
+      status: 401,
+      message: "Las credenciales no son validas",
+      cause: 'Bad request'
+    })
+    let user = { ...req.user };
+    delete user._doc.password;
+    const access_token = generateToken(user);
+    res
+      .cookie("coderCookieToken", access_token)
+      .redirect(`http://localhost:5000/products?login_status=success`);   
+  } catch (error) {
+    next(error)
+  }
 };
 
 export const googleFailedLogin = async (req, res) => {
@@ -113,47 +131,100 @@ export const modifyUser = async (req, res) => {
     const response = await UserService.update(id, obj);
     res.json({ user: response, status: "success" });
   } catch (error) {
-    res.status(404).json({ message: "Error updating cart", error: error });
+    next(CustomError.createError({
+      name: "Cart not updated",
+      code: 4,
+      status: 500,
+      message: "Could not update the cart",
+      cause: 'Server Error'
+    }))
   }
-};
-export const changePassword = async (req, res) => {
-  const { currentPass, newPass } = req.body;
-  const email = req.user.user._doc.email;
-  const user = await UserService.getOne({ email });
-  if (!user) {
-    res.json({
-      errorCode: 0,
-      msg: "Usuario no encontrado",
-    });
-    return;
-  }
-  if (user.strategy !== "local") {
-    res.json({
-      errorCode: 2,
-      msg: "Los usuarios que generaron su cuenta a traves de google no pueden cambiar la contrasena.",
-    });
-    return;
-  }
-  if (!isValidPassword(user, currentPass)) {
-    res.json({
-      errorCode: 3,
-      msg: "La contrasena actual es incorrecta",
-    });
-    return;
-  }
-  const hashedPass = createHash(newPass);
-  await UserService.update(
-    user._id ,
-    { password: hashedPass }
-  );
-  res.redirect("/private?passwordchange=success");
 };
 
+export const changePassword = async (req, res, next) => {
+  const { currentPass, newPass } = req.body;
+  const email = req.user.user._doc.email;
+  try {
+    const user = await UserService.getOne({ email });
+    if (!user) {
+      CustomError.createError({
+        name: "Invalid Credentials",
+        code: 4,
+        status: 401,
+        message: "User not found",
+        cause: ''
+      })
+      return;
+    }
+    if (user.strategy !== "local") {
+      console.log('aca');
+      CustomError.createError({
+          name: "error",
+          code: 4,
+          status: 404,
+      message: "Los usuarios creados con google no pueden cambiar la contrasena",
+      cause: "Los usuarios creados con google no pueden cambiar la contrasena"
+    })
+    return
+  }
+  if (!isValidPassword(user, currentPass)) {
+    CustomError.createError({
+      name: "error",
+      code: 4,
+      status: 404,
+      message: "La contrasena actual es incorrecta"
+    })
+    return;
+  }
+  } catch (error) {
+    return next(error)
+  }
+
+  const hashedPass = createHash(newPass);
+  try {
+    await UserService.update(
+      user._id ,
+      { password: hashedPass }
+      );
+      res.redirect("/private?passwordchange=success");
+      
+    } catch (error) {
+      next(CustomError.createError({
+        name: "Password not changed",
+        code: 4,
+        status: 500,
+        message: "Could not change the password",
+        cause: 'Server Error'
+      }))
+    }
+};
+  
 export const confirmedSale = async (req, res) => {
   try {
     const id = req.params.id;
     const newCart = await CartService.create({});
     const response = await UserService.update( id , obj);
     res.redirect("/products");
-  } catch (error) {}
+  } catch (error) {
+    next(CustomError.createError({
+      name: "Sale not confirmed",
+      code: 4,
+      status: 500,
+      message: "Could not complete the sale",
+      cause: 'Server Error'
+    }))
+  }
 };
+
+export const getFakeUsers = async(req,res) => {
+    const users = []
+    
+    for (let i = 0; i < 10; i++) {
+      users.push(generateUser())
+    }
+
+    res.json({
+      status:'success',
+      payload: users
+    })
+}

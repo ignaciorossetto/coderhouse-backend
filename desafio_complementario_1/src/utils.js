@@ -15,6 +15,7 @@ export const passportCall = (strategy, obj) => {
                 return next(err)
             }
             if(!user){
+                console.log('aca');
                 return res.status(401).render('errors/base', {
                     error: info?.messages ? info.messages : info?.toString()
                 })

@@ -7,6 +7,8 @@ import jwt from 'passport-jwt'
 import { cartModel } from '../dao/mongo/models/carts.model.js'
 import config from './config.js'
 import { CartService, UserService } from '../repository/index.js'
+import CustomError from "../services/errors/customError.js";
+
 
 
 
@@ -34,8 +36,9 @@ const initialazePassport = () => {
             return done(null, jwt_payload)
         } catch (error) {
             return done(error)
+            }
         }
-    }))
+    ))
 
 
     passport.use('google', new GoogleStrategy(
