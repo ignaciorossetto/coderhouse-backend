@@ -51,7 +51,6 @@ const displayCartInfo = () => {
 window.onload = async() => {
     const respone  = await fetch(`http://localhost:5000/api/carts/${cartId}`)
     const data = await respone.json()
-    console.log(data);
     cart = data.cart
     shippingInfo = data.cart.shippingInfo
     paymentInfo = data.cart.paymentInfo

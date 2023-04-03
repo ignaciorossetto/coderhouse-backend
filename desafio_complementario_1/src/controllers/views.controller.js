@@ -2,6 +2,7 @@ import { productModel } from "../dao/mongo/models/product.model.js";
 
 
 export const indexView = async (req, res) => {
+
   res.render("home", {});
 };
 
@@ -32,6 +33,7 @@ export const productsViewWithSocket = async (req, res) => {
 
 
 export const productsView = async (req, res) => {
+  
   res.render("products", {});
 };
 export const productView = async (req, res) => {
@@ -60,4 +62,13 @@ export const changePasswordView = async (req, res) => {
 };
 export const adminView = async (req, res) => {
   res.render("admin", {admin: 'Bienvenido Admin'});
+};
+export const forgotPass = async (req, res) => {
+  res.render("forgotPass");
+};
+export const changePass = async (req, res) => {
+  res.render("changePass");
+};
+export const addProductView = async (req, res) => {
+  res.render("addProduct");
 };

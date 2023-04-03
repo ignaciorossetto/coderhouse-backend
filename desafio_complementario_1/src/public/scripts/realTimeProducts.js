@@ -13,11 +13,9 @@ const handleCreateButton = async (e) => {
     // dejar en blanco el form
     const resetBtn = document.getElementById("resetButton");
     resetBtn.click();
-    console.log(obj);
     // disparar la llamada al socket para que devuelva los productos actualizados
     socket.emit("productsModified", obj);
     socket.on("products", (data) => {
-      console.log(data);
       document.getElementById("socketList").innerHTML = "";
       data.forEach((element) => {
         document.getElementById(
@@ -52,7 +50,6 @@ document
 
 
 socket.on("products", (data) => {
-  console.log(data);
   document.getElementById("socketList").innerHTML = "";
   data.forEach((element) => {
     document.getElementById(
@@ -61,12 +58,10 @@ socket.on("products", (data) => {
   });
 });
 
-socket.on('newMessage', data=>console.log(data))
 
 
 window.onload = () => {
   socket.on("products", (data) => {
-    console.log(data);
 
     document.getElementById("socketList").innerHTML = "";
     data.forEach((element) => {

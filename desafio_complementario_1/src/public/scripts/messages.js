@@ -39,7 +39,6 @@ chatBoxClick.addEventListener("click", () => {
         user,
         message: chatBox.value
     }
-    console.log(obj);
     socket.emit("message", obj);
     chatBox.value = "";
   }

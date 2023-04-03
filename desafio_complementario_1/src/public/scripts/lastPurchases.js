@@ -2,7 +2,6 @@ const lpList = document.getElementById('lpList')
 
 const displayCarts = async(array) => {
     lpList.innerHTML = ''
-    console.log(array);
     array.forEach((element)=> {
         lpList.innerHTML += 
         `<li><a href='/private/lastpurchases/${element.cart._id}'>${element.cart.updatedAt.split('T')[0]}</a></li>`

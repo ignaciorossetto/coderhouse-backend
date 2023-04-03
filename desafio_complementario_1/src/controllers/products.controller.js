@@ -40,6 +40,7 @@ export const getAllProducts = async (req, res, next) => {
       })
     
   } catch (error) {
+    req.logger.warn({Name: error.name, Message: error.message})
     next(error)
   }
 };
@@ -64,6 +65,7 @@ export const getProductById = async (req, res, next) => {
       return res.status(200).json(categories);
       
     } catch (error) {
+      req.logger.warn({Name: error.name, Message: error.message})
       next(error)
     }
   }
@@ -82,7 +84,7 @@ export const getProductById = async (req, res, next) => {
     }
     res.json({ product: response, status: "success" });
   } catch (error) {
-    console.log('hola')
+    req.logger.warn({Name: error.name, Message: error.message})
     next(error)
   }
 };
@@ -90,19 +92,28 @@ export const getProductById = async (req, res, next) => {
 export const addProduct = async (req, res, next) => {
   // body must be like product model, anyway all fields are requiredx
   try {
-    const response = await ProductService.add(req.body);
-    console.log('response:', response);
-    if (!response) {
-      return CustomError.createError({
-        name: "Bad request",
-        code: 2,
-        status: 404,
-        message: "Error creating product",
-        cause: 'Bad request'
-      })
+    if (req.user._id === req.body.owner || req.user.admin) {
+      const response = await ProductService.add(req.body);
+      if (!response) {
+        return CustomError.createError({
+          name: "Bad request",
+          code: 2,
+          status: 404,
+          message: "Error creating product",
+          cause: 'Bad request'
+        })
+      }
+      return res.json({ product: response, status: "success" });
     }
-    res.json({ product: response, status: "success" });
+    return CustomError.createError({
+      name: "Bad request",
+      code: 2,
+      status: 404,
+      message: "No puedes crear productos a nombre de otro",
+      cause: 'Bad request'
+    })
   } catch (error) {
+    req.logger.warn({Name: error.name, Message: error.message})
     next(error)
   }
 };
@@ -123,25 +134,37 @@ export const updateProduct = async (req, res, next) => {
     }
     res.json({ product: response, status: "success" });
   } catch (error) {
+    req.logger.warn({Name: error.name, Message: error.message})
     return next(error)
   }
 };
 
-export const deleteProductById = async (req, res) => {
+export const deleteProductById = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const response = await ProductService.delete(id);
-    if (!response) {
-      return CustomError.createError({
-        name: "Bad request",
-        code: 2,
-        status: 404,
-        message: "Error deleting product",
-        cause: 'Bad request'
-      })
+    const product = await ProductService.getOne(id);
+    if (req.user._id === product.owner || req.user.admin) {
+      const response = await ProductService.delete(id);
+      if (!response) {
+        return CustomError.createError({
+          name: "Bad request",
+          code: 2,
+          status: 404,
+          message: "Error deleting product",
+          cause: 'Bad request'
+        })
+      }
+      return res.json({ status: "success", message: 'Producto eliminado' });
     }
-    res.json({ product: response, status: "success" });
+    return CustomError.createError({
+      name: "Bad request",
+      code: 2,
+      status: 404,
+      message: "No eres el dueño del producto!",
+      cause: 'Bad request'
+    })
   } catch (error) {
+    req.logger.warn({Name: error.name, Message: error.message})
     return next(error)
   }
 };
@@ -160,6 +183,7 @@ export const deleteall = async (req, res) => {
     }
     res.json({ product: response, status: "success" });
   } catch (error) {
+    req.logger.warn({Name: error.name, Message: error.message})
     next(error)
   }
 };

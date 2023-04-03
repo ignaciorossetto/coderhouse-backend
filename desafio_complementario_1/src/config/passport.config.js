@@ -28,15 +28,48 @@ const initialazePassport = () => {
 
     passport.use('jwt', new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: config.jwtSecret
+        secretOrKey: config.jwtSecret,
+        passReqToCallback: true
 
-    }, async(jwt_payload, done)=>{
+    }, async(req, jwt_payload, done)=>{
 
         try {
             return done(null, jwt_payload)
         } catch (error) {
+            req.logger.fatal({Name: error.name, Message: error.message})
             return done(error)
             }
+        }
+    ))
+
+    passport.use('jwt-premium', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: config.jwtSecret,
+        passReqToCallback: true
+
+    }, async(req, jwt_payload, done)=>{
+        const user = jwt_payload.user._doc
+        if (user.type === 'premium' || user.admin) {
+            return done(null, user)    
+        } else {
+            return done(null, false)
+        }
+        }
+    ))
+
+
+    passport.use('jwt-admin', new JWTStrategy({
+        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
+        secretOrKey: config.jwtSecret,
+        passReqToCallback: true
+
+    }, async(req, jwt_payload, done)=>{
+        const user = jwt_payload.user._doc
+        if (user.admin) {
+            return done(null, user)    
+        } else {
+            return done(null, false)
+        }
         }
     ))
 
@@ -72,11 +105,12 @@ const initialazePassport = () => {
                     }],
                     strategy: 'google'
                 }
-                const result = await UserService.create(newUser)
+                let result = await UserService.create(newUser)
+                const aa  = {...result}
                 req.user = result
                 return done(null, result)
             } catch (error) {
-                console.log(error);
+                req.logger.fatal({Name: error.name, Message: error.message})
             }
          }
       ))
@@ -107,6 +141,7 @@ const initialazePassport = () => {
                 const result = await UserService.create(newUser)
                 return done(null, result)
             } catch (error) {
+                req.logger.fatal({Name: error.name, Message: error.message})
                 return done('Error al crear un usuario' + error, false)
             }
         }
@@ -114,10 +149,12 @@ const initialazePassport = () => {
 
     passport.use('login', new LocalStrategy({
         usernameField: 'email',
-        session: false
-    }, async(username, password, done) => { 
+        session: false,
+        passReqToCallback: true
+    }, async(req, username, password, done) => { 
         try {
-            const user = await UserService.getOne({email: username})
+            let user = await UserService.getOne({email: username})
+  
             if (!user) {
                 return done(null, false, {messages: 'Usuario/Password inexistente'})   
             }
@@ -129,6 +166,7 @@ const initialazePassport = () => {
             }
             return done(null, user)
         } catch (error) {
+            req.logger.fatal({Name: error.name, Message: error.message})
             return done(error)
         }
      }

@@ -13,6 +13,7 @@ import passport from 'passport'
 import cookieParser from 'cookie-parser'
 import config from "./config/config.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import { addLogger } from "./utils/logger.js";
 
 const PORT = config.port
 const app = express();
@@ -22,6 +23,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser())
+
+// logger
+app.use(addLogger)
 
 
 // session config
@@ -61,21 +65,31 @@ app.use("/api/products", productsRouter);
 app.use("/api/carts", cartsRoute);
 app.use("/api/messages", messagesRoute);
 app.use("/api/users", usersRouter);
+app.get('/api/loggerTest', (req,res,next)=> {
+  req.logger.error('message: error')
+  req.logger.warn('message: warn')
+  req.logger.info('message: info')
+  req.logger.http('message: http')
+  req.logger.verbose('message: verbose')
+  req.logger.debug('message: debug')
+  res.send({message: 'Testing logger....'})
+})
 
 // errorHandler middleware
 app.use(errorHandler)
 
-// server and db config and init
-mongoose.connect(
-  config.mongoUrl,
-  (err) => {
-    if (err) {
-      console.log("Could not connect to database");
-      return;
-    }
-    console.log("Connected to DataBase");
-  }
-);
+// server and db config and init (now in factory)
+// mongoose.connect(
+//   config.mongoUrl,
+//   (err) => {
+//     if (err) {
+//       console.log("Could not connect to database");
+//       return;
+//     }
+//     console.log("Mongo db connected");
+
+//   }
+// );
 
 const httpServer = app.listen(PORT, () => {
   console.log(`Listening server on port ${PORT}`);
@@ -84,4 +98,11 @@ const httpServer = app.listen(PORT, () => {
 const io = new Server(httpServer)
 
 app.set('io', io)
+
+  io.on('connection', (socket) => {
+    socket.removeAllListeners()
+    socket.on('productAdded', data=> {
+      io.emit('totalQuantityInCart', data)
+    })
+  })
 

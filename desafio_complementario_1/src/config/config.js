@@ -11,4 +11,6 @@ export default {
     googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     googleCallBackUrlEndpoint: process.env.GOOGLE_CALLBACK_URL_ENDPOINT,
     jwtSecret: process.env.JWT_SECRET,
+    mailUser: process.env.MAIL_USER,
+    mailPassword: process.env.MAIL_PASSWORD,
 }

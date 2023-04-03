@@ -25,9 +25,7 @@ export const getAllMessages = async (req, res) => {
 
     socket.on('message', async(data) => {
       const mesa = await messageModel.find()
-      console.log(mesa);
       mesa[0].messages.push(data)
-      console.log(mesa);
       io.emit('messageLogs', mesa[0].messages)
         const response = await messageModel.findByIdAndUpdate({_id: mesa[0]._id}, {
             $push: {

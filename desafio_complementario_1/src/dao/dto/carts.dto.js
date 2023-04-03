@@ -4,10 +4,8 @@ export default class CartDTO {
       this._id = cart._id
       this.shippingInfo = cart.shippingInfo
       this.paymentInfo = cart.paymentInfo
-      this.shopCart = cart.shopCart || [
+      this.shopCart = cart.shopCart || []
       this.timestamps = cart.timestamps
-      ]
-
 
     }
 

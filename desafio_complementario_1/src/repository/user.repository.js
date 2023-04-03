@@ -11,7 +11,6 @@ export default class CartRepository {
     }
 
     getOne = async(filter) => {
-        console.log('repository:', filter);
         return await this.dao.getOne(filter)
     }
 

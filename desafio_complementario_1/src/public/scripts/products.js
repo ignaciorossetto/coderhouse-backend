@@ -1,4 +1,5 @@
 const productsGrid = document.getElementById("productsGrid");
+const productSpinner = document.getElementById("productSpinner");
 const selectCategories = document.getElementById("selectCategories");
 const selectPriceSort = document.getElementById("selectPriceSort");
 const selectQuantityDisplayed = document.getElementById(
@@ -18,12 +19,10 @@ const handleSelect = async (e) => {
     selectQuantityDisplayed.value === "-"
       ? `limit=1000`
       : `limit=${selectQuantityDisplayed.value}&`;
-  console.log(`http://localhost:5000/api/products?${sort}${category}${limit}`);
   const response = await fetch(
     `http://localhost:5000/api/products?${sort}${category}${limit}`
   );
   const data = await response.json();
-  console.log(data);
   display(data.payload, data);
 };
 
@@ -35,31 +34,41 @@ const handlePaginate = async (url) => {
 };
 
 const display = async (productsArray,data) => {
+  productSpinner.style.display = ''
   productsGrid.innerHTML = ``;
   productsArray.forEach((element) => {
     productsGrid.innerHTML += `
-        <div style="width: 33%;
-                    height: auto;
-                    flex: 1;">
-            <img src="${element.image}" alt="Avatar" style="width:100%">
-            <div class="container">
-                <h4><b>${element.title}</b></h4>
-                <p>$${element.price}</p>
-                <a href="http://localhost:5000/products/${element._id}" >ver producto</a>
-            </div>
+
+
+        <div class="productCard shadow card col-lg-6" style="width: 18rem;">
+          <img src="${element.image}" style='width: auto; height:300px;' class="card-img-top object-fit-contain" alt="product">
+          <div class="card-body d-flex flex-column justify-content-between">
+          <div style='height: auto; min-height:125px;'>
+          <h5 class="card-title">${element.title}</h5>
+          </div>
+            <p class="card-text">$${element.price}</p>
+            <a href="http://localhost:5000/products/${element._id}" class="btn btn-primary">ver producto</a>
+          </div>
         </div>
+
+
+
         `;
 
-        prevPageBtn.innerHTML = data.hasPrevPage ? `<button onclick='handlePaginate("${data.prevLink}")'> <- </button>` : `<button disabled> <- </button>`
+        prevPageBtn.innerHTML = data.hasPrevPage ? `<button class='btn btn-primary' onclick='handlePaginate("${data.prevLink}")'> <i class="bi bi-arrow-left"></i> </button>` : `<button class='btn btn-secondary' disabled> <i class="bi bi-arrow-left"></i></button>`
         currentPage.innerText = data.page
-        nextPageBtn.innerHTML = data.hasNextPage ? `<button onclick='handlePaginate("${data.nextLink}")'> -> </button>` : `<button disabled> -> </button>`
+        nextPageBtn.innerHTML = data.hasNextPage ? `<button class='btn btn-primary' onclick='handlePaginate("${data.nextLink}")'> <i class="bi bi-arrow-right"></i> </button>` : `<button class='btn btn-secondary' disabled> <i class="bi bi-arrow-right"></i> </button>`
         // NO PUEDO HACER FUNCIONAR LOS BTNS CON LAS CATEGORIAS QUE TIENE UN ' ADENTRO POR EJEMPLO men's clothing. 
+        productSpinner.style.display = 'none'
+        productsGrid.style.display = ''
   });
 
 
 };
 
 window.onload = async () => {
+  productSpinner.style.display = ''
+  productsGrid.style.display = 'none'
   const categories_resp = await fetch(
     "http://localhost:5000/api/products/categories"
   );

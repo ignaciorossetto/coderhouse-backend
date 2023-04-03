@@ -8,8 +8,6 @@ export const  Socket = {
 };
 
 io.on("connection", function (socket) {
-    console.log("A user connected", socket.id);
     socket.on('authenticated', (data)=>{
-        console.log(data);
     })
 });

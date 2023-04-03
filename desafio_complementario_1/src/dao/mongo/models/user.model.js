@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  type: {
+    type: String,
+    default: 'user'
+  },
   strategy: {
     type: String,
     required: true,

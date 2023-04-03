@@ -8,6 +8,7 @@ export default class ProductDTO {
     this.image = product.image
     this.code = product.code
     this.stock = product.stock
+    this.owner = product.owner
   }
 
 }

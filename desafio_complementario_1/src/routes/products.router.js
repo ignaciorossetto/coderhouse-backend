@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { passportCall } from "../utils.js";
+
 
 import {
   getAllProducts,
@@ -13,9 +15,9 @@ const router = Router();
 
 router.get("/", getAllProducts);
 router.get("/:id", getProductById);
-router.post("/", addProduct);
+router.post("/", passportCall('jwt-premium'), addProduct);
 router.put("/:id", updateProduct);
-router.delete("/:id", deleteProductById);
+router.delete("/:id", passportCall('jwt-premium'), deleteProductById);
 router.delete("/", deleteall);
 
 export default router;

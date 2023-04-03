@@ -1,0 +1,13 @@
+{"level":"error","message":"message: error"}
+{"level":"warn","message":"message: warn"}
+{"level":"info","message":"message: info"}
+{"level":"error","message":"message: error"}
+{"level":"warn","message":"message: warn"}
+{"level":"info","message":"message: info"}
+{"level":"error","message":"message: error"}
+{"level":"warn","message":"message: warn"}
+{"level":"info","message":"message: info"}
+{"level":"warn","message":{"Message":"No eres el dueño del producto!","Name":"Bad request"}}
+{"level":"warn","message":{"Message":"No eres el dueño del producto!","Name":"Bad request"}}
+{"level":"warn","message":{"Message":"No puede crear productos a nombre de otro","Name":"Bad request"}}
+{"level":"warn","message":{"Message":"E11000 duplicate key error collection: desafio_complementario_1.products index: code_1 dup key: { code: \"548974123123355\" }","Name":"MongoServerError"}}

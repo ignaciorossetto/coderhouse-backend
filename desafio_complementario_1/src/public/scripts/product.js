@@ -1,8 +1,6 @@
 const productTitle = document.getElementById("productTitle");
 const productContainer = document.getElementById("productContainer");
-
-
-
+const socket2 = io();
 window.onload = async () => {
   try {
   const user = await fetch('http://localhost:5000/api/users/check')
@@ -13,21 +11,21 @@ window.onload = async () => {
   const { product } = await response.json();
   productTitle.innerText = `${product.title}`;
   productContainer.innerHTML = `
-          <div style="width: 33%;
-                      height: auto;">
-              <img src="${product.image}" alt="Avatar" style="width:50%">
-              <div class="container">
-                  <h4 id='productTitle'><b>${product.title}</b></h4>
-                  <p  id='productId'>${product._id}</p>
-                  <p  id='productPrice'>$${product.price}</p>
-              </div>
-              <button id='addCartButton' >Agregar al carrito</button>
+
+            
+          <div style='height: auto; min-height:350px;' class="card w-50 d-flex align-items-center justify-content-evenly">
+            <img src="${product.image}" style='width: 50%; height:auto;' class="card-img-top object-fit-contain" alt="product">
+            <div style='height: auto; min-height:125px;'>
+              <h5 class="card-title">${product.title}</h5>
+              <h5 class="card-title">$${product.price}</h5>
+              <button class="btn btn-primary" id='addCartButton' >Agregar al carrito</button>
           </div>
+
           `;
 const addCartButton = document.getElementById("addCartButton");
 
   addCartButton.addEventListener("click", async(e) => {
-    const id = document.getElementById('productId').innerText
+    const id = product._id
     Swal.fire({
       position: 'top-end',
       icon: 'success',
@@ -37,6 +35,16 @@ const addCartButton = document.getElementById("addCartButton");
       toast: true
     })
     const {shopCart} = currentCart.cart
+    if (product.owner === userData.user._id) {
+      return Swal.fire({
+        position: 'top-end',
+        icon: 'warning',
+        title: `No puede agregar productos propios al carrito`,
+        showConfirmButton: false,
+        timer: 1500,
+        toast: true
+      })
+    }
     if(!shopCart.some((aa)=>{
       return aa.product === id})){
         const obj={
@@ -45,11 +53,13 @@ const addCartButton = document.getElementById("addCartButton");
         }
         shopCart.push(obj)
         await axios.put(`http://localhost:5000/api/carts/${currentCart.cart._id}`, {shopCart : shopCart})
-    } else {
+      } else {
         const index = shopCart.findIndex((aa)=> aa.product === id)
         shopCart[index].quantity += 1
         await axios.put(`http://localhost:5000/api/carts/${currentCart.cart._id}`, {shopCart : shopCart})
-    }
+      }
+      socket2.emit('productAdded', shopCart)
+    // location.reload()
 
   });
   } catch (error) {

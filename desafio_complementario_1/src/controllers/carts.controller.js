@@ -15,6 +15,7 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json(response);
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       next(error)
     }
   }
@@ -34,6 +35,7 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json({ cart: response, status: "success" });
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       return next(error)
       
     }
@@ -53,6 +55,7 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json({ cart: response, status: "success" });
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       next(error)
     }
   }
@@ -75,6 +78,7 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json({ cart: response, status: "success" });
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       next(error)
     }
   }
@@ -94,6 +98,7 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json({ cart: response, status: "success" });
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       next(error)
     }
   }
@@ -112,12 +117,12 @@ import CustomError from "../services/errors/customError.js";
       }
       res.json({ cart: response, status: "success" });
     } catch (error) {
+      req.logger.fatal({Name: error.name, Message: error.message})
       next(error)
     }
   }
 
   
-
 
 
 

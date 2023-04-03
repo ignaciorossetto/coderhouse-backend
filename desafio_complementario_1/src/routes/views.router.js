@@ -10,7 +10,10 @@ import {
     adminView,
     lastPurchasesView,
     lastPurchasesInfoView,
-    changePasswordView
+    changePasswordView,
+    forgotPass,
+    changePass,
+    addProductView
 } from '../controllers/views.controller.js'
 import {getAllMessages} from '../controllers/messages.controller.js'
 import __dirname, {passportCall} from "../utils.js";
@@ -31,6 +34,9 @@ router.get("/private/lastpurchases",passportCall('jwt'), lastPurchasesView)
 router.get("/private/lastpurchases/:id",passportCall('jwt'), lastPurchasesInfoView)
 router.get("/private/password",passportCall('jwt'), changePasswordView)
 router.get("/admin",passportCall('jwt-admin'), adminView)
+router.get("/forgotPassword", forgotPass)
+router.get("/changePassword", changePass)
+router.get("/addproduct",passportCall('jwt-premium'), addProductView)
 router.get("/error", (req,res)=>{
   res.render('errors/base')
 })

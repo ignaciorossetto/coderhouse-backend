@@ -1,5 +1,7 @@
 let currentCart
 let userCartId
+const socket3 = io();
+
 
 const deleteHandler = async(id) => {
   const {cart : {shopCart}} = currentCart
@@ -10,6 +12,7 @@ const deleteHandler = async(id) => {
   }
   await axios.put(`http://localhost:5000/api/carts/${userCartId}`, {shopCart: shopCart})
   renderCart(userCartId)
+  socket3.emit('productAdded', shopCart)
 };
 
 
@@ -20,17 +23,23 @@ const renderCart = async(cartID) => {
   let cartContainer = document.getElementById("cartContainer");
   let total = 0;
   cartContainer.innerHTML = ''
+  if (shopCart.length > 0) {
+    
+  
   shopCart.forEach((element) => {
     cartContainer.innerHTML += `
-        <div>
-          <img src='${element.product.image}' alt='x' style='width: auto;
-          height: 200px;'>
-        <h4>ID: ${element.product._id}</h4>
-        <h5>PRECIO: $${element.product.price}</h5>
-        <h5>CANTIDAD: ${element.quantity}</h5>
-        <button id='deleteItemBtn' onclick="deleteHandler('${element.product._id}')">Eliminar del carrito </button>
-        </div>
-        <hr>
+
+
+        <div class="card w-25 px-5">
+            <img src="${element.product.image}" style='width:auto; height:200px;' class="card-img-top object-fit-contain" alt="element">
+            <div style='height: auto; min-height:125px;' class='d-flex flex-column justify-content-between'>
+              <h5 class="card-title">${element.product.title}</h5>
+              <h5 class="card-title">$${element.product.price}</h5>
+              <h5 class="card-title">Cantidad: ${element.quantity}</h5>
+              <button class="btn btn-danger" id='deleteItemBtn' onclick="deleteHandler('${element.product._id}')" >Eliminar del carrito</button>
+          </div>
+          <hr>
+
         `;
     total += element.product.price * element.quantity;
   });
@@ -39,8 +48,15 @@ const renderCart = async(cartID) => {
 <hr>
 <div>TOTAL: $${total} </div>
 <br>
-<a style="background-color: red; padding: 3px; border: black solid 2px;" href="/shippinginfo">Continuar </a>
+<a href="/shippinginfo"" class="btn btn-primary">Continuar</a>
+
 `;
+} 
+
+cartContainer.innerHTML += `
+  <h3> No hay productos en el carrito </h3>
+`
+
 };
 
 
@@ -49,6 +65,6 @@ window.onload = async() => {
   const response = await fetch('http://localhost:5000/api/users/check')
   const data = await response.json()
   currentCart = data.user.currentCart
-  userCartId = currentCart.cart._id
+  userCartId = currentCart?.cart?._id
   renderCart(userCartId)
 }

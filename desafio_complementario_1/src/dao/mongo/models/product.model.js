@@ -28,10 +28,17 @@ const productSchema = new mongoose.Schema({
   },
   code: {
     type: String,
+    required: true,
     unique: true,
   },
   stock: {
     type: Number,
+    required: true,
+  },
+  owner: {
+    type: String,
+    default: 'admin',
+    
     required: true,
   },
 });
