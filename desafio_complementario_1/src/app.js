@@ -14,9 +14,27 @@ import cookieParser from 'cookie-parser'
 import config from "./config/config.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import { addLogger } from "./utils/logger.js";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express";
 
 const PORT = config.port
 const app = express();
+
+
+// doc config
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: "E-commerce docs",
+      description: "Documentacion oficial de E-commerce"
+    }
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 
 // jsonparser

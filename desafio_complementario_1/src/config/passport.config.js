@@ -1,13 +1,10 @@
 import passport from 'passport'
 import local from 'passport-local'
-import { userModel } from '../dao/mongo/models/user.model.js'
 import { createHash, isValidPassword } from '../utils.js'
 import GoogleStrategy from 'passport-google-oauth20'
 import jwt from 'passport-jwt'
-import { cartModel } from '../dao/mongo/models/carts.model.js'
 import config from './config.js'
 import { CartService, UserService } from '../repository/index.js'
-import CustomError from "../services/errors/customError.js";
 
 
 

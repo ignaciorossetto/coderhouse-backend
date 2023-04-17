@@ -5,7 +5,6 @@ import CustomError from "../services/errors/customError.js";
 export const getAllProducts = async (req, res, next) => {
   let categoryName = req.query.category
   const catQuery = categoryName === undefined || categoryName === 'undefined'  ? {} : {category: categoryName}
-  
   const limitQuery = req.query.limit === undefined ? 1000 : req.query.limit
   const pageQuery = req.query.page || 1
   const sortQuery = req.query.sort
